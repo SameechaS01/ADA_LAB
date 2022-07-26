@@ -1,55 +1,52 @@
+
+
 #include <stdio.h>
+#include <stdlib.h>
+#include <time.h>
 
-#define max 10
-
-int a[11] = { 10, 14, 19, 26, 27, 31, 33, 35, 42, 44, 0 };
-int b[10];
-
-void merging(int low, int mid, int high) {
-   int l1, l2, i;
-
-   for(l1 = low, l2 = mid + 1, i = low; l1 <= mid && l2 <= high; i++) {
-      if(a[l1] <= a[l2])
-         b[i] = a[l1++];
-      else
-         b[i] = a[l2++];
-   }
-   
-   while(l1 <= mid)    
-      b[i++] = a[l1++];
-
-   while(l2 <= high)   
-      b[i++] = a[l2++];
-
-   for(i = low; i <= high; i++)
-      a[i] = b[i];
+void merge(int a[],int l, int mid, int h)
+{
+    int b[1000000],i,j,k;
+    i=l,j=mid+1,k=l;
+    while(i<=mid && j<=h)
+    {
+        b[k++] = (a[i]<a[j]) ? a[i++] : a[j++];
+    }
+    while(i<=mid) b[k++] = a[i++];
+    while(j<=h) b[k++] = a[j++];
+    for(k=l; k<=h; k++) a[k] = b[k];
 }
 
-void sort(int low, int high) {
-   int mid;
-   
-   if(low < high) {
-      mid = (low + high) / 2;
-      sort(low, mid);
-      sort(mid+1, high);
-      merging(low, mid, high);
-   } else { 
-      return;
-   }   
+int mergeesort(int a[],int l, int h)
+{
+    int mid;
+    if(l>=h)
+    return -1;
+    mid = (l+h)/2;
+    mergeesort(a,l,mid); //left part of array
+    mergeesort(a,mid+1,h); //right part of array
+    merge(a,l,mid,h); 
 }
 
-int main() { 
-   int i;
-
-   printf("List before sorting\n");
-   
-   for(i = 0; i <= max; i++)
-      printf("%d ", a[i]);
-
-   sort(0, max);
-
-   printf("\nList after sorting\n");
-   
-   for(i = 0; i <= max; i++)
-      printf("%d ", a[i]);
+int main()
+{
+    int a[100000],n,i;
+    clock_t c;
+    printf("\nEnter the size: ");
+    scanf("%d",&n);
+    printf("\n The elements before sorting ");
+    for(i=0; i<n;i++)
+    {
+        a[i] = rand()%100;
+        printf("%d\t",a[i]);
+    }
+    c = clock();
+    mergeesort(a,0,n-1);
+    c = c - clock();
+    printf("\n The elements after sorting ");
+    for(i=0; i<n;i++)
+    {
+        printf("%d\t",a[i]);
+    }
+    printf("\n Time taken is = %lu",c/CLOCKS_PER_SEC);
 }
